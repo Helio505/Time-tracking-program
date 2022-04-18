@@ -206,7 +206,6 @@ label_time_passed.place(x=240, y=80)
 start_time = 0
 finish_time = 0
 
-# These functions are for the stopwatch
 def get_name():
     """This func gets the name of the task,
      if the task doesn't have a name stuff breaks."""
