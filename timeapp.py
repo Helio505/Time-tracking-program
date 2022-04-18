@@ -71,7 +71,7 @@ dark_mode = True # if not chosen, dark mode is active.
 showing_time = False
 time_now = 0
 task_name = None
-default_titlebar = False
+default_titlebar = True
 
 def config_from_db():
     return
