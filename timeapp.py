@@ -196,7 +196,6 @@ if default_titlebar == False:
 
 # Entry to receive the name, and display the time:
 entry_box = Entry(root, width=40, bg=e_b_c, fg=f_c_2, font=(20))
-# entry_box.place(x=5, y=10) this is the old up there
 entry_box.place(x=200, y=200)
 
 # Entry to display current time passed:
@@ -311,15 +310,9 @@ def clear():
     """Just deletes what's in the main entry:"""
     feedback(button_clear)
     entry_box.delete(0, END)
-    sys.exit()
-    "remove this"
+    # sys.exit()
+    # "remove this"
 
-# class facilitate_life():
-#     def __init__(self):
-#         pass
-#     def clear():
-#         entry_box.delete(0, END)
-#         print("works")
 
 def popup_windows(title: str, message: str):
     popup = messagebox.showerror(title=title, message=message)
@@ -668,7 +661,6 @@ tkimage = ImageTk.PhotoImage(im2)
 
 button_config = Button(root, text="inf", image=tkimage, padx=32, width=90, pady=20, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: config_window())
 button_adding = Button(root, text="add/choose \n projects", padx=28, pady=12, bg=b_c, activebackground=b_c, fg=f_c, command=lambda: add_projects())
-
 
 # Putting the buttons on the screen
 # button_get_name.place(x=2, y=60)
