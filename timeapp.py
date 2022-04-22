@@ -1,69 +1,18 @@
 # Time tracking/management app
-import time
-import datetime
+import time, datetime, sys
 from datetime import datetime
 from tkinter import *
 from tkinter import END
-from tkinter import messagebox
 import sqlite3
 import matplotlib.pyplot as plt
 from PIL import Image, ImageTk
-import sys
 
-def format_tuple(tuple_value: tuple, data_type):
-    """Turns tuple into str/int/etc without commas or parenthesis.
-    Receives the tuple, and returns the formatted value.
-    tuple_value = tuple input
-    data_type = str, int, float, etc."""
+from packages.easier import format_tuple, table_name_function
+from packages.easier import initialize, popup_windows
 
-    tuple_value = str(tuple_value)
-    tuple_value_1 = tuple_value.replace("(", "")
-    tuple_value_2 = tuple_value_1.replace(")", "")
-    tuple_value_final = tuple_value_2.replace(",", "")
+from packages.dark_mode import dark_mode_window, dark_mode_color_values
 
-    tuple_value_final = data_type(tuple_value_final)
-    return tuple_value_final
 
-def table_name_function():
-    """Creates a name for the table. One table for each day.
-    - Takes the day and month from time module, and creates a table name.
-    - Returns the table name."""
-    table_name_raw = time.gmtime()
-    tab2 = (table_name_raw.tm_mday, table_name_raw.tm_mon)
-    tab3 = format_tuple(tab2, str)
-    tab4 = tab3.replace(" ", "_")
-    table_name_final = ("date__" + tab4)
-    return table_name_final
-
-def initialize():
-    """What to do: start main database, start tables.
-    Start storage of configurations. 
-    Initializes important files. Initializes functions
-    that have to be defined before other things."""
-
-    conn = sqlite3.connect("local_database.db")
-    cursor = conn.cursor()
-
-    try:
-        cursor.execute("CREATE TABLE projects (name text)")
-    except sqlite3.Error as error:
-        print(error)
-
-    try:
-        cursor.execute("CREATE TABLE config (name text, value text)")
-    except sqlite3.Error as error:
-        print(error)
-
-    table_name = table_name_function()
-    try:
-        cursor.execute("CREATE TABLE " + table_name + " (name text, time_spent real)")
-    except sqlite3.Error as error:
-        print(error)
-
-    conn.commit()
-    conn.close()
-    print(f"-----conn closed at initialize func -----")
-    print(f"~~Database initialization completed.~~")
 initialize()
 
 # Some global variables:
@@ -105,52 +54,8 @@ def config_from_db():
     conn.close()
     print(f"-----conn closed at config_from_db-----")
 
-# Dark mode choice window:
-def dark_mode_window():
-    """Returns the value of dark_mode,
-     so that it is applied according to the choice"""
-    root_toggle = Tk()
-    root_toggle.geometry("150x150")
-    root_toggle.configure(bg="#4d4d4d")
-
-    def light():
-        global dark_mode
-        dark_mode = False
-        root_toggle.destroy()
-
-    def dark():
-        global dark_mode
-        dark_mode = True
-        root_toggle.destroy()
-
-    button = Button(root_toggle, text="Light mode", bg="#595959", fg="white", activebackground="#595959", padx="18.7", pady="20", command=light)
-    button.place(x=20, y=10)
-
-    button2 = Button(root_toggle, text="Dark mode", bg="#595959", fg="white", activebackground="#595959", padx="20", pady="20", command=dark)
-    button2.place(x=20, y=80)
-
-    root_toggle.mainloop()
 dark_mode_window()
-
-def dark_mode_color_values():
-    """This func changes the values of the colors depending on the user's choice."""
-    global r_w_c, e_b_c, l_b_c, b_c, f_c, f_c_2
-
-    if dark_mode == True:
-        r_w_c = "#4d4d4d"
-        e_b_c = "#c7c7c7"
-        l_b_c = "#404040"
-        b_c = "#595959"
-        f_c = "white"
-        f_c_2 = "black"
-    else:
-        r_w_c = "#bdbdb4" # was white
-        e_b_c = "#e9e9e4" # was white
-        l_b_c = "#e9e9e4" # was white
-        b_c = "#bdbdb4" # was white
-        f_c = "black"
-        f_c_2 = "black"
-dark_mode_color_values()
+r_w_c, e_b_c, l_b_c, b_c, f_c, f_c_2 = dark_mode_color_values()
 
 def current_time():
     """When it is called, it returns the current time in seconds. It is isolated
@@ -159,11 +64,10 @@ def current_time():
     time_now = time.time()
     return time_now
 
-
 # Main window:
 root = Tk()
 
-root.title("Time management app v0...")
+root.title("Time management app v0.7")
 root.geometry("700x335")
 root.resizable(width=0, height=0)
 root.configure(bg=r_w_c)
@@ -191,8 +95,6 @@ if default_titlebar == False:
 
     exiton = Button(title_bar_frame, text="min", padx=10, pady=5, command=something)
     exiton.place(x='500', y='0')
-
-    
 
 # Entry to receive the name, and display the time:
 entry_box = Entry(root, width=40, bg=e_b_c, fg=f_c_2, font=(20))
@@ -225,6 +127,16 @@ def get_name():
 def stopwatch_start():
     """Starts the stopwatch"""
     feedback(button_stopwatch_start)
+    
+
+    list_to_ignore = ["", " ", "  ", "   ", "    ", "     ", None]
+    if entry_box.get() in list_to_ignore:
+        popup_windows("error", "Project needs a valid name. \
+        \nSelect or create and select a project first.")
+        return
+    else:
+        pass
+
     entry_box.delete(0, END)
     
     global start_time, showing_time
@@ -307,15 +219,11 @@ def stopwatch_finish_calculate():
 
 
 def clear():
-    """Just deletes what's in the main entry:"""
+    """Just deletes what's in the main entry box:"""
     feedback(button_clear)
     entry_box.delete(0, END)
     # sys.exit()
     # "remove this"
-
-
-def popup_windows(title: str, message: str):
-    popup = messagebox.showerror(title=title, message=message)
 
 
 def insert_database():
@@ -462,13 +370,13 @@ def graph():
 
     def showing_graph():
         pie_components_2 = []
-        for i in pie_components:
+        for i in pie_components: # change this artificial modification.
             if i < 100:
-                i = i + 300
+                i = i + 250
             if i < 200:
-                i = i + 200
+                i = i + 150
             if i < 300:
-                i = i + 100
+                i = i + 50
             pie_components_2.append(i)
 
         porcentagem2 = round(sum(pie_components_2), 2)
@@ -482,9 +390,6 @@ def graph():
         plt.legend(legend_components, loc="upper left")
         plt.show()
         # plt.savefig("testfig2",dpi=600)
-
-    
-
 
     root.after(250, showing_graph)
 
@@ -516,7 +421,6 @@ def config_window():
     """Put +info window here."""
     root_config.configure(bg=r_w_c)
 
-
     def placeholderdb():
         return
     
@@ -544,7 +448,6 @@ def config_window():
     button_debug = Button(root_config, text="debug", padx=32, pady=14, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: debug())
     button_debug.grid(row=3, column=0)
     
-
     root_config.mainloop()
 
 
@@ -614,12 +517,10 @@ def add_projects():
         cursor.execute("SELECT name from "+table_name_function()+"")
         aa = cursor.fetchall()
 
-
         list = []
         for i in aa:
             i2 = format_tuple(i, str).replace("'", "")
             list.append(i2)
-
 
         if project not in list:
             conn = sqlite3.connect("local_database.db")
