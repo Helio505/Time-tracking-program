@@ -100,6 +100,44 @@ def graph(feedback_func_bt_par, root):
 
     root.after(250, showing_graph)
 
-
 def gantt_graph():
-    return
+    """Change this for another type of graph in the future."""
+    conn = sqlite3.connect("local_database.db")
+    cursor = conn.cursor()
+
+    legend = []
+    values = []
+    for i in cursor.execute("SELECT name FROM all_tasks").fetchall():
+            i = format_tuple(i, str).replace("'", "")
+            legend.append(i)
+            print("a", i)
+
+    for i in cursor.execute("SELECT time_spent FROM all_tasks").fetchall():
+            if str(i) == "(None,)":
+                i = 0
+            i = format_tuple(i, float)
+            values.append(i)
+    
+    
+    values_in_min = []
+    for i in values:
+        i = i / 60
+        values_in_min.append(i)
+    values = values_in_min
+
+    print(f"legend --- {legend}, {len(legend)}")
+    print(f"valueees --- {values}, len {len(values)}") 
+    
+    conn.commit()
+    conn.close()
+    
+    # change from bar graph to gantt
+    fig, ax = plt.subplots()
+    bars = ax.bar(legend, values)
+    ax.bar_label(bars)
+    plt.title("Distribution of time")
+    plt.bar(legend, values, color="darkgreen", bottom=0, align="center")
+    plt.xlabel("Taskname"), plt.ylabel("Time spent (minutes)")
+    plt.rc("xtick", labelsize=7)
+    plt.show()
+
