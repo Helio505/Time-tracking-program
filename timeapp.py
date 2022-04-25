@@ -1,4 +1,5 @@
 # Time tracking/management app
+
 import time, datetime, sys
 from datetime import datetime
 from tkinter import *
@@ -7,54 +8,27 @@ import sqlite3
 import matplotlib.pyplot as plt
 from PIL import Image, ImageTk
 
-from packages.easier import format_tuple, table_name_function
-from packages.easier import initialize, popup_windows
-
-from packages.dark_mode import dark_mode_window, dark_mode_color_values
-
-
+from packages.easier import initialize
+from packages.config_file import initialize_configs
 initialize()
+initialize_configs()
+
+
+from packages.easier import format_tuple, table_name_function
+from packages.easier import popup_windows
+
+from packages.dark_mode import dark_mode_color_values
+from packages.graph_file import graph, gantt_graph
+from packages.dark_mode import dark_false, dark_true
 
 # Some global variables:
-dark_mode = True # if not chosen, dark mode is active.
+dark_mode = True # probably not needed. # if not chosen, dark mode is active.
 showing_time = False
 time_now = 0
 task_name = None
 default_titlebar = True
 
-def config_from_db():
-    return
-    conn = sqlite3.connect("local_database.db")
-    cursor = conn.cursor()
-
-    try:
-        cursor.execute("CREATE TABLE config (name text, value text)")
-    except sqlite3.Error as error:
-        print(error)
-
-    # Making a list of what already is on the database:
-    list_of_configs = []
-    for i in cursor.execute("SELECT name FROM config"):
-        element = format_tuple(i, str).replace("'", "")
-        list_of_configs.append(element)
-
-    configs = ["dark_mode", "more_information"]
-    if configs not in list_of_configs:
-        cursor.execute("INSERT INTO config (name) VALUES (?)", ('dark_mode'))
-        cursor.execute("INSERT INTO config (name) VALUES (?)", ('more_information'))
-
-
-    def mode():
-        text = 'dark_mode'
-        if text not in list_of_configs:
-            cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ('dark_mode', 'True'))
-            """check if it is already in database"""
-
-    conn.commit()
-    conn.close()
-    print(f"-----conn closed at config_from_db-----")
-
-dark_mode_window()
+# dark_mode_window()
 r_w_c, e_b_c, l_b_c, b_c, f_c, f_c_2 = dark_mode_color_values()
 
 def current_time():
@@ -67,7 +41,7 @@ def current_time():
 # Main window:
 root = Tk()
 
-root.title("Time management app v0.7")
+root.title("Time management app v0.74")
 root.geometry("700x335")
 root.resizable(width=0, height=0)
 root.configure(bg=r_w_c)
@@ -97,12 +71,14 @@ if default_titlebar == False:
     exiton.place(x='500', y='0')
 
 # Entry to receive the name, and display the time:
-entry_box = Entry(root, width=40, bg=e_b_c, fg=f_c_2, font=(20))
-entry_box.place(x=200, y=200)
+entry_box = Entry(root, width=37, bg=e_b_c, fg=f_c_2, font=(18)) # font was 20, x was 200 width was 40
+entry_box.place(x=145, y=200)
 
 # Entry to display current time passed:
-label_time_passed = Label(root, width=18, height=2, bg=l_b_c, fg="#c7c7c7", font=("Courier", 30)) # relief=RIDGE, borderwidth="1"
-label_time_passed.place(x=240, y=80)
+label_time_passed = Label(root, width=18, height=2, bg=l_b_c, fg="#c7c7c7", font=("Courier", 30)) # relief=RIDGE, borderwidth="1" before
+label_time_passed.place(x=150, y=90)
+
+
 
 start_time = 0
 finish_time = 0
@@ -171,6 +147,7 @@ def stopwatch_finish_calculate():
 
     calc = finish_time - start_time
     # calc = 7048.097345113754
+    # calc = calc + 400
 
     round_calc_sec = round(calc, 2)
 
@@ -212,7 +189,6 @@ def stopwatch_finish_calculate():
     global showing_time, r_c_s
     showing_time = False
     r_c_s = round(calc, 2)
-    print(f"TTTTT r_c_s = {r_c_s} TTTTT")
     
     insert_database()
     root.after(2000, clear)
@@ -258,11 +234,15 @@ def insert_database():
 
     # [code below] If the time_spent slot is NULL, goes with one command, if it isn't, goes with another.
     if check_database() == "None":
-        cursor.execute("UPDATE "+table_name_function()+" set time_spent = "+if_null()+" WHERE name = '"+task_name+"'")
-        print("done/timespent/null")
+        if_null_var = if_null()
+        cursor.execute("UPDATE "+table_name_function()+" set time_spent = "+if_null_var+" WHERE name = '"+task_name+"'")
+        cursor.execute("UPDATE all_tasks set time_spent = "+if_null_var+" WHERE name = '"+task_name+"'")
+        # print("done/timespent/null")
     else:
-        cursor.execute("UPDATE "+table_name_function()+" set time_spent = "+if_not_null()+" WHERE name = '"+task_name+"'")
-        print("done2/timespent+/NOTnull")
+        if_not_null_var = if_not_null()
+        cursor.execute("UPDATE "+table_name_function()+" set time_spent = "+if_not_null_var+" WHERE name = '"+task_name+"'")
+        cursor.execute("UPDATE all_tasks set time_spent = "+if_not_null_var+" WHERE name = '"+task_name+"'")
+        # print("done2/timespent+/NOTnull")
 
     def see_later():
         return
@@ -297,11 +277,35 @@ def update():
     if showing_time == True:
         current_time()
         keep_track = time_now - start_time
-        keep_track_round = round(keep_track, 2)
-        label_time_passed.configure(text=(str(keep_track_round), "sec"))
-        label_time_passed.after(100, update) # changing the value here, changes the update rate of the clock.
+        keep_track_round = round(keep_track, 1)
+
+        round_calc_sec = keep_track_round
+        """These if statements and while loops are for the conversion from seconds, to
+        minutes, hours, etc."""
+        # For seconds:
+        if round_calc_sec < 60:
+            display_time = f"00:00:{str(round_calc_sec)}"
+        # For minutes:
+        min = 0
+        while round_calc_sec >= 60:
+            min = min + 1
+            round_calc_sec -= 60
+            round_calc_b = round(round_calc_sec, 2)
+            display_time = f"00:{str(min)}:{str(round_calc_b)}"
+        # For hours:
+        hour = 0
+        while min >= 60:
+            hour += 1
+            min -= 60
+            round_calc_sec -= 60
+            display_time = f"{str(hour)}:{str(min)}:{str(round_calc_b)}"
+
+        label_time_passed.configure(text=(str(display_time)))
+
+        # label_time_passed.configure(text=(str(keep_track_round), "sec")) old version
+        label_time_passed.after(150, update) # changing the value here, changes the update rate of the clock.
     else:
-        label_time_passed.configure(text="0:00:00")
+        label_time_passed.configure(text="00:00:00")
         return
 update()
 
@@ -311,18 +315,17 @@ def show_file():
     feedback(button_show_file)
 
     with open("tasks saved file.txt") as file:
-        test = file.read()
-
+        contents_of_file = file.read()
 
     root_show_file = Tk()
 
-    root.resizable(width=0, height=1)
-    root_show_file.geometry("350x806")
+    root_show_file.geometry("294x637")
+    root_show_file.resizable(width=0, height=0)
     root_show_file.configure(bg=r_w_c)
 
     # Somehow this scroll feature works, don't change anything here:
     textbox = Text(root_show_file, height=35, width=30, bg=r_w_c, fg=f_c, font=14)
-    textbox.insert(END, test)
+    textbox.insert(END, contents_of_file)
     textbox.grid(row=0, column=0)
     
     scrollbar = Scrollbar(root_show_file, orient="vertical", command=textbox.yview)
@@ -333,123 +336,70 @@ def show_file():
     root_show_file.mainloop()
 
 
-def graph():
-    feedback(button_graph)
-    def get_elements_for_graph():
-        """Gets the elements to build the graph."""
-        conn = sqlite3.connect("local_database.db")
-        cursor = conn.cursor()
-        global pie_components, legend_components
-        pie_components = []
-        legend_components = []
-        for i in cursor.execute("SELECT name FROM " + table_name_function()):
-            name_element = (format_tuple(i, str)).replace("'", "") # here is ' not ''
-
-            list_to_ignore = ["", " ", "  ", "   ", "    ", "     ", '', ' ', '  ', '   ', '    ']
-            if name_element in list_to_ignore:
-                pass
-            else:
-                legend_components.append(name_element)
-
-        for i in cursor.execute("SELECT time_spent FROM " + table_name_function()):
-            try:
-                time_spent_element = format_tuple(i, str).replace("'", "")
-
-                if time_spent_element == "None": # null elements will be ignored in the graph.
-                    pass
-                else:
-                    time_spent_element = float(time_spent_element)
-                    pie_components.append(time_spent_element)
-            except:
-                print("----error")
-
-        conn.commit()
-        conn.close()
-        print(f"-----conn closed at get elements for graph-----")
-    get_elements_for_graph()
-
-    def showing_graph():
-        pie_components_2 = []
-        for i in pie_components: # change this artificial modification.
-            if i < 100:
-                i = i + 250
-            if i < 200:
-                i = i + 150
-            if i < 300:
-                i = i + 50
-            pie_components_2.append(i)
-
-        porcentagem2 = round(sum(pie_components_2), 2)
-
-        restante = 86400 - porcentagem2
-
-        pie_components_2.append(restante)
-        legend_components.append("unmarked")
-    
-        plt.pie(pie_components_2)
-        plt.legend(legend_components, loc="upper left")
-        plt.show()
-        # plt.savefig("testfig2",dpi=600)
-
-    root.after(250, showing_graph)
+def graph_frame():
+    graph(feedback(button_graph), root)
 
 
-# Feedback for the buttons:
-def feedback(button_name):
-    """Configures the button to another color,
-     then after some miliseconds resets it to the previous color."""
-    button_name.configure(bg="green")
-
-    def feedback_reset():
-        button_name.configure(bg=b_c)
-
-    root.after(100, feedback_reset)
-
-
+counter_config_window = 0
 def config_window():
-    return
-    feedback(button_config)
-    """This is the configuration window. Used to change some values."""
-    config_from_db()
+    conn = sqlite3.connect("local_database.db")
+    cursor = conn.cursor()
+    #put feedback here
 
-    root_config = Tk()
-
-    root_config.title("Time management app v0...")
-    root_config.geometry("400x200")
-    # root.resizable(width=1, height=0)
-
-    """Put +info window here."""
-    root_config.configure(bg=r_w_c)
-
-    def placeholderdb():
-        return
+    # This if for toggle config window:
+    global counter_config_window
+    counter_config_window += 1
+    if counter_config_window == 1:
+        root.geometry(f"{700+400}x{335}")
+    else:
+        counter_config_window = 0
+        root.geometry(f"{700}x{335}")
     
-    button_toggle_mode = Button(root_config, text="dark_mode", padx=32, pady=14, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: placeholderdb())
-    button_toggle_mode.grid(row=0, column=0)
+    frame_config = Frame(root, bg="yellow", pady=110, padx=120)
+    frame_config.place(x=670, y=14)
 
-    button_reset_db = Button(root_config, text="reset_database", padx=32, pady=14, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: placeholderdb())
-    button_reset_db.grid(row=1, column=0)
+    info_label = Label(frame_config, font=(10), text="Restart recommended", height=2, width=10, bg="red")
+    # info_label.place(x="0", y="0")
+    info_label.grid(row=0, column=0)
 
-    button_timezone = Button(root_config, text="change_timezone", padx=32, pady=14, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: placeholderdb())
-    button_timezone.grid(row=2, column=0)
-
-
-    def debug():
-        conn = sqlite3.connect("local_database.db")
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT * FROM "+table_name_function()+"")
-        print("[][][][]all elements[][][][] -> ", cursor.fetchall())
-
-        conn.commit()
-        conn.close()
-        print(f"-----conn closed at debug()-----")
-
-    button_debug = Button(root_config, text="debug", padx=32, pady=14, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: debug())
-    button_debug.grid(row=3, column=0)
+    # If something is already activated, this will make sure it is shown:
+    var1 = IntVar()
+    cursor.execute("SELECT value FROM config WHERE name = 'dark_mode'")
+    value = format_tuple(cursor.fetchone(), str).replace("'", "")
+    if value == "True":
+        var1.set(1)
+    else:
+        var1.set(0)
     
-    root_config.mainloop()
+    def mode_function():
+            if var1.get() == 1:
+                dark_true()
+            else:
+                dark_false()
+    check_toggle_mode = Checkbutton(frame_config, text="text2", font=("Courier", 20), bg="purple", variable=var1, onvalue=1, offvalue=0, command=mode_function)
+    check_toggle_mode.grid(row=1, column=0)
 
+    
+    # Bar graph:
+    var2 = IntVar()
+    cursor.execute("SELECT value FROM config WHERE name = 'dark_mode'")
+    value = format_tuple(cursor.fetchone(), str).replace("'", "")
+    if value == "True":
+        var2.set(1)
+    else:
+        var2.set(0)
+    
+    def mode_function():
+            if var2.get() == 1:
+                dark_true()
+            else:
+                dark_false()
+    check_toggle_mode = Checkbutton(frame_config, text="text3", font=("Courier", 20), bg="purple", variable=var2, onvalue=1, offvalue=0, command=mode_function)
+    check_toggle_mode.grid(row=2, column=0)
+
+
+    conn.commit()
+    conn.close()
 
 def add_projects():
     feedback(button_adding)
@@ -483,6 +433,7 @@ def add_projects():
         entry_box2.delete(0, END)
         cursor.execute("INSERT INTO projects (name) VALUES (?)", [project_name]) # for some reason it wants this comma to work. # for some reason the # second argument has to be a list.
         cursor.execute("INSERT INTO "+table_name_function()+" (name) VALUES (?)", [project_name])
+        cursor.execute("INSERT INTO all_tasks (name) VALUES (?)", [project_name])
         conn.commit()
         conn.close()
         print(f"-----conn closed at add(add_projects())-----")
@@ -546,6 +497,16 @@ def add_projects():
 
     root2.mainloop()
 
+# Feedback for the buttons:
+def feedback(button_name): #, root, bg_color_feedback, bg_color_original
+    """Configures the button to another color,
+     then after some miliseconds resets it to the previous color."""
+    button_name.configure(bg="green")
+    
+    def feedback_reset():
+        button_name.configure(bg=b_c)
+
+    root.after(100, feedback_reset)
 
 # Buttons:
 button_stopwatch_start = Button(root, text=" Start ", padx=40, pady=20, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: stopwatch_start())
@@ -553,7 +514,7 @@ button_stopwatch_finish_calculate = Button(root, text=" Stop ", padx=40, pady=20
 button_get_name = Button(root, text="Name deactvat", padx=40, pady=20, bg=b_c, fg=f_c, activebackground=b_c)
 button_clear = Button(root, text=" Clear ", padx=40, pady=20, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: clear())
 button_show_file = Button(root, text="Show file", padx=28, pady=20, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: show_file())
-button_graph = Button(root, text="Graph", padx=32, pady=20, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: graph())
+button_graph = Button(root, text="Graph", padx=32, pady=20, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: graph_frame())
 
 # button_config icon:
 imageOpened = Image.open("assets\config2_icon.png")
@@ -571,6 +532,21 @@ button_clear.place(x=125, y=270)
 button_adding.place(x=250, y=270)
 button_show_file.place(x=383, y=270)
 button_graph.place(x=500, y=270)
+
+# [this is for testing ----------------------------------------------------------------------------- this is for testing]
+def func0():
+    gantt_graph()
+
+
+
+def func1():
+    return
+button_test0 = Button(root, text="TEST0", padx=14, pady=6, bg=b_c, activebackground=b_c, fg=f_c, command=lambda: func0())
+button_test1 = Button(root, text="TEST1", padx=14, pady=6, bg=b_c, activebackground=b_c, fg=f_c, command=lambda: func1())
+button_test0.place(x=620, y=200)
+button_test1.place(x=620, y=270)
+# [this is for testing ----------------------------------------------------------------------------- this is for testing]
+
 button_config.place(x=15, y=270)
 
 root.mainloop()

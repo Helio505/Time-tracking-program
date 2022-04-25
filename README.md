@@ -22,7 +22,6 @@ How it looks (version 0.7):
 <br />
 
 - Summary of how it works is: You create a project, then start the clock, when you are done, stop the clock. It will save the name of the task and time spent.
-- If you want to contribute, you can, but explain what you're doing. If you have any suggestions send them.
 - On the first initialization, the script will create 2 files, one txt, and a .db file.
 - If you spend time on a project now then later, it will add the times.
 

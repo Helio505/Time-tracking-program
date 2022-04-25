@@ -1,35 +1,47 @@
-"""This is for all the dark_mode stuff"""
+"""This is for all the dark_mode/light_mode stuff."""
 
 from tkinter import Tk, Button
+import sqlite3
+from packages.easier import format_tuple
 
-# Dark mode choice window:
-def dark_mode_window():
-    """Returns the value of dark_mode,
-     so that it is applied according to the choice"""
-    root_toggle = Tk()
-    root_toggle.geometry("150x150")
-    root_toggle.configure(bg="#4d4d4d")
+def dark_true():
+    "Connects to the db and updates value of dark mode to True"
+    conn = sqlite3.connect("local_database.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE config set value = 'True' WHERE name = '"+"dark_mode"+"'")
+    conn.commit()
+    conn.close()
 
-    def light():
-        global dark_mode
-        dark_mode = False
-        root_toggle.destroy()
+def dark_false():
+    "Connects to the db and updates value of dark mode to False"
+    conn = sqlite3.connect("local_database.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE config set value = 'False' WHERE name = '"+"dark_mode"+"'")
+    conn.commit()
+    conn.close()
 
-    def dark():
-        global dark_mode
-        dark_mode = True
-        root_toggle.destroy()
 
-    button = Button(root_toggle, text="Light mode", bg="#595959", fg="white", activebackground="#595959", padx="18.7", pady="20", command=light)
-    button.place(x=20, y=10)
 
-    button2 = Button(root_toggle, text="Dark mode", bg="#595959", fg="white", activebackground="#595959", padx="20", pady="20", command=dark)
-    button2.place(x=20, y=80)
+dark_mode = False
+conn = sqlite3.connect("local_database.db")
+cursor = conn.cursor()
+cursor.execute("SELECT value FROM config WHERE name = 'dark_mode'")
+value = format_tuple(cursor.fetchone(), str).replace("'", "")
 
-    root_toggle.mainloop()
+# gets dark mode value from database and changes it here:
+if value == "True":
+    dark_mode = True
+else:
+    dark_mode = False
+
+conn.commit()
+conn.close()
 
 def dark_mode_color_values():
-    """This func changes the values of the colors depending on the user's choice."""
+    """
+    This func changes the values of the colors depending on the user's choice.
+    - One set of colors for dark mode, and one set for light mode.
+    """
     global r_w_c, e_b_c, l_b_c, b_c, f_c, f_c_2
 
     if dark_mode == True:
