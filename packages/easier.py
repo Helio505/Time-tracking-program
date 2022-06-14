@@ -3,7 +3,8 @@
     I will put here things that I use frequently.
 """
 
-import time, sqlite3
+import time
+import sqlite3
 from tkinter import messagebox
 
 def format_tuple(tuple_value: tuple, data_type):

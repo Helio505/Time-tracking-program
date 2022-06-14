@@ -1,9 +1,13 @@
 # Time tracking/management app
 
-import time, datetime, sys
+import time
+import datetime
+import sys
 from datetime import datetime
+
 from tkinter import *
 from tkinter import END
+
 import sqlite3
 from PIL import Image, ImageTk
 
@@ -15,17 +19,20 @@ from packages.config_file import initialize_configs
 initialize()
 initialize_configs()
 
-from packages.easier import format_tuple, table_name_function, popup_windows, popup_windows_info
+from packages.easier import format_tuple, table_name_function
+from packages.easier import popup_windows, popup_windows_info
+
 from packages.dark_mode import dark_mode_color_values, dark_false, dark_true
 from packages.graph_file import graph, gantt_graph
-from packages.config_file import above_win_false, above_win_true
+# from packages.config_file import above_win_false, above_win_true
+
 
 # Some global variables:
 dark_mode = True # probably not needed. # if not chosen, dark mode is active.
 showing_time = False
 time_now = 0
 task_name = None
-default_titlebar = True
+# default_titlebar = True
 in_task = False
 
 r_w_c, e_b_c, l_b_c, b_c, f_c, f_c_2, f_c_3, e_b_c_2, config_icon_path = dark_mode_color_values()
@@ -40,74 +47,39 @@ def current_time():
 # Main window:
 root = Tk()
 
-root.title("Time management app v0.80")
+root.title("Time management app v0.81")
 root.geometry("700x335")
 root.resizable(width=0, height=0)
 root.configure(bg=r_w_c)
 root.iconphoto(False, PhotoImage(file="assets\clock_icon2.PNG"))
 
 
-def rename_later():
-    return
-    conn = sqlite3.connect(DATABASE_NAME)
-    cursor = conn.cursor()
-    cursor.execute("SELECT value FROM config WHERE name = 'above_other_windows'")
-    value = format_tuple(cursor.fetchone(), str).replace("'", "")
-    
-    if value == "True":
-        root.wm_attributes("-topmost", "True")
-    else:
-        root.wm_attributes("-topmost", "False")
-
-    conn.commit()
-    conn.close()
-rename_later()
-
-if default_titlebar == False:
-    root.wm_overrideredirect("True")
-    title_bar_frame = Frame(root, bg="#333333", height=20)
-    title_bar_frame.pack(expand=1, fill="x", anchor="n")
-    title_bar_label = Label(title_bar_frame, text="Time-tracker", bg="#333333", fg="white", height=2)
-    title_bar_label.pack(anchor="w")
-    def exit():
-        sys.exit()
-    exit_button = Button(title_bar_frame, text="X", padx=10, pady=5, bg="#333333", fg="white", command=exit)
-    exit_button.place(x='664', y='0')
-    def window_drag(e):
-        root.geometry(f"+{e.x_root-340}+{e.y_root-15}")
-
-    title_bar_frame.bind("<B1-Motion>", window_drag)
-
-    def minimize():
-        root.overrideredirect(False)
-        root.wm_state("iconic")
-
-    def rem():
-        root.overrideredirect(True)
-
-    minimize_button = Button(title_bar_frame, text="-", padx=10, pady=5, bg="#333333", fg="white", command=minimize)
-    minimize_button.place(x='629', y='0')
-
-    min_button = Button(title_bar_frame, text="rem", padx=10, pady=5, bg="#333333", fg="white", command=rem)
-    min_button.place(x='578', y='0')
-
-
 # Entry to receive the name, and display the time:
-entry_box = Entry(root, width=37, bg=e_b_c, fg=f_c_2, font=(18)) # font was 20, x was 200 width was 40
+entry_box = Entry(root,
+    width=37, bg=e_b_c, fg=f_c_2, font=(18)) # font was 20, x was 200 width was 40
 entry_box.place(x=150, y=220)
-label_entry_title = Label(root, width=18, text="Event box", height=1, bg=l_b_c, fg=f_c_3, font=("Courier", 8)) # relief=RIDGE, borderwidth="1" before
+label_entry_title = Label(root,
+    width=18, text="Event box", height=1,
+    bg=l_b_c, fg=f_c_3, font=("Courier", 8)) # relief=RIDGE, borderwidth="1" before
 label_entry_title.place(x=150, y=200)
 
 # Entry to display current time passed:
-label_time_passed = Label(root, width=18, height=2, bg=l_b_c, fg=f_c_3, font=("Courier", 30)) # relief=RIDGE, borderwidth="1" before
+label_time_passed = Label(root,
+    width=18, height=2, bg=l_b_c,
+    fg=f_c_3, font=("Courier", 30)) # relief=RIDGE, borderwidth="1" before
 label_time_passed.place(x=150, y=90)
-label_time_passed_title = Label(root, width=18, text="Counter", height=1, bg=l_b_c, fg=f_c_3, font=("Courier", 8)) # relief=RIDGE, borderwidth="1" before
+label_time_passed_title = Label(root,
+    width=18, text="Counter", height=1, bg=l_b_c,
+    fg=f_c_3, font=("Courier", 8)) # relief=RIDGE, borderwidth="1" before
 label_time_passed_title.place(x=150, y=70)
 
 # Entry to input the goal time:
-entry_box_goal = Entry(root, width=10, bg=e_b_c, fg="#180dea", font=(18))
+entry_box_goal = Entry(root,
+    width=10, bg=e_b_c, fg="#180dea", font=(18))
 entry_box_goal.place(x=500, y=220)
-label_goal_title = Label(root, width=6, text="Goal", height=1, bg=l_b_c, fg=f_c_3, font=("Courier", 8)) # relief=RIDGE, borderwidth="1" before
+label_goal_title = Label(root,
+    width=6, text="Goal", height=1,
+    bg=l_b_c, fg=f_c_3, font=("Courier", 8)) # relief=RIDGE, borderwidth="1" before
 label_goal_title.place(x=500, y=200)
 
 def goal_func():
@@ -520,10 +492,6 @@ def config_window():
             check_toggle_mode = Checkbutton(frame_config, text="Bar graph", font=("Courier", 15), width=10, relief="ridge", bg="grey", variable=var2, onvalue=1, offvalue=0, command=mode_function)
             check_toggle_mode.grid(row=2, column=0)
 
-        def for_default_titlebar():
-            check_toggle_mode = Checkbutton(frame_config, text="Default titlebar\n not work", font=("Courier", 10), wraplength=200, width=16, relief="ridge", bg="grey", onvalue=1, offvalue=0)
-            check_toggle_mode.grid(row=3, column=0)
-
         def for_keeping_focus_on_window(): # FIXME above others is buggy
             return
             var4 = IntVar()
@@ -546,7 +514,7 @@ def config_window():
 
     check_buttons.for_dark_mode()
     check_buttons.for_graph_type()
-    check_buttons.for_default_titlebar()
+    # check_buttons.for_default_titlebar()
     # check_buttons.for_keeping_focus_on_window()
     conn.commit()
     conn.close()
@@ -662,22 +630,45 @@ def feedback(button_name): #, root, bg_color_feedback, bg_color_original
     root.after(75, feedback_reset)
 
 # Buttons:
-button_stopwatch_start = Button(root, text=" Start ", padx=40, pady=20, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: stopwatch_start())
-button_stopwatch_finish_calculate = Button(root, text=" Stop ", padx=40, pady=20, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: stopwatch_finish_calculate())
-button_get_name = Button(root, text="Name deactvat", padx=40, pady=20, bg=b_c, fg=f_c, activebackground=b_c)
-button_clear = Button(root, text=" Clear ", padx=40, pady=20, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: clear())
-button_show_file = Button(root, text="Show file", padx=28, pady=20, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: show_file())
-button_graph = Button(root, text="Graph", padx=32, pady=20, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: graph_frame())
+button_stopwatch_start = Button(root,
+    text=" Start ", padx=40, pady=20, bg=b_c, fg=f_c,
+    activebackground=b_c,
+    command=lambda: stopwatch_start())
+button_stopwatch_finish_calculate = Button(root,
+    text=" Stop ", padx=40, pady=20, bg=b_c, fg=f_c,
+    activebackground=b_c,
+    command=lambda: stopwatch_finish_calculate())
+button_get_name = Button(root,
+    text="Name deactvat", padx=40, pady=20, bg=b_c, fg=f_c,
+    activebackground=b_c)
+button_clear = Button(root,
+    text=" Clear ", padx=40, pady=20, bg=b_c, fg=f_c,
+    activebackground=b_c,
+    command=lambda: clear())
+button_show_file = Button(root,
+    text="Show file", padx=28, pady=20, bg=b_c, fg=f_c,
+    activebackground=b_c,
+    command=lambda: show_file())
+button_graph = Button(root,
+    text="Graph", padx=32, pady=20, bg=b_c, fg=f_c,
+    activebackground=b_c,
+    command=lambda: graph_frame())
 
 # button_config icon:
 imageOpened = Image.open(config_icon_path)
 im2 = imageOpened.resize((53, 51))
 tkimage = ImageTk.PhotoImage(im2)
 
-button_config = Button(root, text="inf", image=tkimage, padx=32, width=90, pady=20, bg=b_c, fg=f_c, activebackground=b_c, command=lambda: config_window())
-button_adding = Button(root, text="add/choose \n projects", padx=28, pady=12, bg=b_c, activebackground=b_c, fg=f_c, command=lambda: add_projects())
+button_config = Button(root,
+    text="inf", image=tkimage, padx=32, width=90,
+    pady=20, bg=b_c, fg=f_c, activebackground=b_c,
+    command=lambda: config_window())
+button_adding = Button(root,
+    text="add/choose \n projects", padx=28, pady=12,
+    bg=b_c, activebackground=b_c, fg=f_c,
+    command=lambda: add_projects())
 
-# Putting the buttons on the screen
+# Putting the buttons on the screen:
 button_stopwatch_start.place(x=2, y=130)
 button_stopwatch_finish_calculate.place(x=2, y=200)
 button_clear.place(x=125, y=270)
@@ -685,11 +676,9 @@ button_adding.place(x=250, y=270)
 button_show_file.place(x=383, y=270)
 button_graph.place(x=500, y=270)
 
-
 def all_tasks_graph():
     feedback(button_timeline)
     gantt_graph()
-    print("timeline")
 
 def timeline_plotly_graph():
     feedback(button_test1)
@@ -700,9 +689,16 @@ def timeline_plotly_graph():
 #     # new_name = "local_database22.db"
 #     # os.rename(old_name, new_name)
 #     return
-button_timeline = Button(root, text="all_tasks", padx=14, pady=6, bg=b_c, activebackground=b_c, fg=f_c, command=lambda: all_tasks_graph())
+
+button_timeline = Button(root,
+    text="all_tasks", padx=14, pady=6,
+    bg=b_c, activebackground=b_c, fg=f_c,
+    command=lambda: all_tasks_graph())
 button_timeline.place(x=612, y=256)
-button_test1 = Button(root, text="timeline", padx=14, pady=6, bg=b_c, activebackground=b_c, fg=f_c, command=lambda: timeline_plotly_graph())
+button_test1 = Button(root,
+    text="timeline", padx=14, pady=6,
+    bg=b_c, activebackground=b_c, fg=f_c,
+    command=lambda: timeline_plotly_graph())
 button_test1.place(x=612, y=296)
 button_config.place(x=15, y=270)
 

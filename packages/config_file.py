@@ -19,25 +19,24 @@ def initialize_configs():
         cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['dark_mode', 'False'])
         cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['extra_information', 'False'])
         cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['graph_type', 'BAR'])
-        cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['above_other_windows', 'False'])
+        # cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['above_other_windows', 'False'])
         # cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['dark_bg_graph', 'False'])
         # cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['high_contrast_mode', 'False'])
-        # cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['default_titlebar', 'False'])
         # TODO add default_titlebar, color_graph, focus_on_window
     conn.commit()
     conn.close()
 
 
-def above_win_true():
-    conn = sqlite3.connect("local_database.db")
-    cursor = conn.cursor()
-    cursor.execute("UPDATE config set value = 'True' WHERE name = '"+"above_other_windows"+"'")
-    conn.commit()
-    conn.close()
+# def above_win_true():
+#     conn = sqlite3.connect("local_database.db")
+#     cursor = conn.cursor()
+#     cursor.execute("UPDATE config set value = 'True' WHERE name = '"+"above_other_windows"+"'")
+#     conn.commit()
+#     conn.close()
 
-def above_win_false():
-    conn = sqlite3.connect("local_database.db")
-    cursor = conn.cursor()
-    cursor.execute("UPDATE config set value = 'False' WHERE name = '"+"above_other_windows"+"'")
-    conn.commit()
-    conn.close()
+# def above_win_false():
+#     conn = sqlite3.connect("local_database.db")
+#     cursor = conn.cursor()
+#     cursor.execute("UPDATE config set value = 'False' WHERE name = '"+"above_other_windows"+"'")
+#     conn.commit()
+#     conn.close()
