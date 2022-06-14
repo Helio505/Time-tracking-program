@@ -117,6 +117,7 @@ def graph(feedback_func_bt_par, root):
 
 
 def gantt_graph():
+    """ This shows all the time spent on each project."""
     conn = sqlite3.connect("local_database.db")
     cursor = conn.cursor()
 

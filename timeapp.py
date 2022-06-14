@@ -686,10 +686,12 @@ button_show_file.place(x=383, y=270)
 button_graph.place(x=500, y=270)
 
 
-def timeline_graph():
+def all_tasks_graph():
     feedback(button_timeline)
     gantt_graph()
-def func1():
+    print("timeline")
+
+def timeline_plotly_graph():
     feedback(button_test1)
     import dataframe
 
@@ -698,9 +700,9 @@ def func1():
 #     # new_name = "local_database22.db"
 #     # os.rename(old_name, new_name)
 #     return
-button_timeline = Button(root, text="all_tasks", padx=14, pady=6, bg=b_c, activebackground=b_c, fg=f_c, command=lambda: timeline_graph())
+button_timeline = Button(root, text="all_tasks", padx=14, pady=6, bg=b_c, activebackground=b_c, fg=f_c, command=lambda: all_tasks_graph())
 button_timeline.place(x=612, y=256)
-button_test1 = Button(root, text="timeline", padx=14, pady=6, bg=b_c, activebackground=b_c, fg=f_c, command=lambda: func1())
+button_test1 = Button(root, text="timeline", padx=14, pady=6, bg=b_c, activebackground=b_c, fg=f_c, command=lambda: timeline_plotly_graph())
 button_test1.place(x=612, y=296)
 button_config.place(x=15, y=270)
 
