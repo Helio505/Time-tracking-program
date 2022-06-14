@@ -1,9 +1,32 @@
+"""
+    This file is for the graphs.
+"""
+
 from packages.easier import format_tuple, table_name_function
 import sqlite3
 import matplotlib.pyplot as plt
 
+def bar_true():
+    conn = sqlite3.connect("local_database.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE config set value = 'BAR' WHERE name = '"+"graph_type"+"'")
+    conn.commit()
+    conn.close()
+
+def bar_false():
+    conn = sqlite3.connect("local_database.db")
+    cursor = conn.cursor()
+    cursor.execute("UPDATE config set value = 'PIE' WHERE name = '"+"graph_type"+"'")
+    conn.commit()
+    conn.close()
+
+conn = sqlite3.connect("local_database.db")
+cursor = conn.cursor()
+cursor.execute("SELECT value FROM config WHERE name = 'graph_type'")
+value = format_tuple(cursor.fetchone(), str).replace("'", "")
+
+graph_type = value
 dark_graph = False
-graph_type = "BAR"
 
 def graph(feedback_func_bt_par, root):
     """feedback_func_bt_par means -- feedback function with button as parameter.
@@ -45,18 +68,15 @@ def graph(feedback_func_bt_par, root):
 
     
     def showing_graph():
-    # ------------------- testing changing seconds to minutes in the graph
         global pie_components
         test_element = []
-        for i in pie_components:
-            i = i / 60
-            test_element.append(i)
-        
+        for sec_elem in pie_components:
+            min_elem = sec_elem / 60
+            test_element.append(min_elem)
         pie_components = test_element
-    # -------------------
-
+        
         if len(legend_components) != len(pie_components): # to remove problem of index out of range
-            pie_components.append(0)
+            pie_components.append(0) # error division by zero
 
         pie_components_percentage = []
         for i in pie_components:
@@ -68,15 +88,13 @@ def graph(feedback_func_bt_par, root):
             legend_components[b] = legend_components[b] + f" [{str(pie_components_percentage[b])}%]"
             b += 1
 
-        print(f"legend = {legend_components}")
-
         if dark_graph == True:
             plt.style.use('dark_background')
         else:
             pass
 
         if graph_type == "PIE":
-            plt.title("Distribution of time")
+            plt.title("Distribution of time (current day)")
             plt.pie(pie_components)
             plt.legend(legend_components, loc="upper left")
             plt.show()
@@ -84,9 +102,9 @@ def graph(feedback_func_bt_par, root):
             fig, ax = plt.subplots()
             bars = ax.bar(legend_components, pie_components)
             ax.bar_label(bars)
-            plt.title("Distribution of time")
+            plt.title("Distribution of time (current day)")
             plt.bar(legend_components, pie_components, color="darkgreen", bottom=0, align="center")
-            plt.xlabel("Taskname"), plt.ylabel("Time spent (minutes)")
+            plt.xlabel("Taskname (and % of time tracked)"), plt.ylabel("Time spent (minutes)")
             plt.rc("xtick", labelsize=7)
             plt.show()
         elif graph_type == "DONUT":
@@ -95,13 +113,10 @@ def graph(feedback_func_bt_par, root):
             pass
         else:
             pass
-
-        # plt.savefig("testfig2", dpi=600)
-
     root.after(250, showing_graph)
 
+
 def gantt_graph():
-    """Change this for another type of graph in the future."""
     conn = sqlite3.connect("local_database.db")
     cursor = conn.cursor()
 
@@ -110,7 +125,6 @@ def gantt_graph():
     for i in cursor.execute("SELECT name FROM all_tasks").fetchall():
             i = format_tuple(i, str).replace("'", "")
             legend.append(i)
-            print("a", i)
 
     for i in cursor.execute("SELECT time_spent FROM all_tasks").fetchall():
             if str(i) == "(None,)":
@@ -124,14 +138,10 @@ def gantt_graph():
         i = i / 60
         values_in_min.append(i)
     values = values_in_min
-
-    print(f"legend --- {legend}, {len(legend)}")
-    print(f"valueees --- {values}, len {len(values)}") 
     
     conn.commit()
     conn.close()
     
-    # change from bar graph to gantt
     fig, ax = plt.subplots()
     bars = ax.bar(legend, values)
     ax.bar_label(bars)
@@ -140,4 +150,3 @@ def gantt_graph():
     plt.xlabel("Taskname"), plt.ylabel("Time spent (minutes)")
     plt.rc("xtick", labelsize=7)
     plt.show()
-

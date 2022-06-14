@@ -1,6 +1,6 @@
 """
-This file is to make the code of the __main__ file more readable.
-I will put here things that I use frequently.
+    This file is to make the code of the __main__ file more readable.
+    I will put here things that I use frequently.
 """
 
 import time, sqlite3
@@ -62,6 +62,11 @@ def initialize():
     except sqlite3.Error as error:
         print(error)
 
+    try:
+        cursor.execute("CREATE TABLE all_tasks_log (name text, time_spent real, starting_date text, finishing_date text)")
+    except sqlite3.Error as error:
+        print(error)
+
     table_name = table_name_function()
     try:
         cursor.execute("CREATE TABLE " + table_name + " (name text, time_spent real)")
@@ -76,3 +81,6 @@ def initialize():
 def popup_windows(title: str, message: str):
     popup = messagebox.showerror(title=title, message=message)
 
+def popup_windows_info(title: str, message: str):
+    popup2 = messagebox.showinfo(title=title, message=message)
+    
