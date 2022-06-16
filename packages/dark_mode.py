@@ -5,9 +5,13 @@
 import sqlite3
 from packages.easier import format_tuple
 
+from changing_database import database_file_path
+DATABASE_NAME = database_file_path()
+# print(f"dbname = {DATABASE_NAME}")
+
 def dark_true():
     "Connects to the db and updates value of dark mode to True"
-    conn = sqlite3.connect("local_database.db")
+    conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
     cursor.execute("UPDATE config set value = 'True' WHERE name = '"+"dark_mode"+"'")
     conn.commit()
@@ -15,14 +19,14 @@ def dark_true():
 
 def dark_false():
     "Connects to the db and updates value of dark mode to False"
-    conn = sqlite3.connect("local_database.db")
+    conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
     cursor.execute("UPDATE config set value = 'False' WHERE name = '"+"dark_mode"+"'")
     conn.commit()
     conn.close()
 
 dark_mode = False
-conn = sqlite3.connect("local_database.db")
+conn = sqlite3.connect(DATABASE_NAME)
 cursor = conn.cursor()
 cursor.execute("SELECT value FROM config WHERE name = 'dark_mode'")
 value = format_tuple(cursor.fetchone(), str).replace("'", "")

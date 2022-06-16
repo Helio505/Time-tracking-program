@@ -6,21 +6,25 @@ from packages.easier import format_tuple, table_name_function
 import sqlite3
 import matplotlib.pyplot as plt
 
+from changing_database import database_file_path
+DATABASE_NAME = database_file_path()
+# print(f"dbname = {DATABASE_NAME}")
+
 def bar_true():
-    conn = sqlite3.connect("local_database.db")
+    conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
     cursor.execute("UPDATE config set value = 'BAR' WHERE name = '"+"graph_type"+"'")
     conn.commit()
     conn.close()
 
 def bar_false():
-    conn = sqlite3.connect("local_database.db")
+    conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
     cursor.execute("UPDATE config set value = 'PIE' WHERE name = '"+"graph_type"+"'")
     conn.commit()
     conn.close()
 
-conn = sqlite3.connect("local_database.db")
+conn = sqlite3.connect(DATABASE_NAME)
 cursor = conn.cursor()
 cursor.execute("SELECT value FROM config WHERE name = 'graph_type'")
 value = format_tuple(cursor.fetchone(), str).replace("'", "")
@@ -35,7 +39,7 @@ def graph(feedback_func_bt_par, root):
     feedback_func_bt_par
     def get_elements_for_graph():
         """Gets the elements to build the graph."""
-        conn = sqlite3.connect("local_database.db")
+        conn = sqlite3.connect(DATABASE_NAME)
         cursor = conn.cursor()
         global pie_components, legend_components
         pie_components = []
@@ -118,7 +122,7 @@ def graph(feedback_func_bt_par, root):
 
 def gantt_graph():
     """ This shows all the time spent on each project."""
-    conn = sqlite3.connect("local_database.db")
+    conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
 
     legend = []

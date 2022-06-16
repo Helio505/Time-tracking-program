@@ -32,7 +32,6 @@ dark_mode = True # probably not needed. # if not chosen, dark mode is active.
 showing_time = False
 time_now = 0
 task_name = None
-# default_titlebar = True
 in_task = False
 
 r_w_c, e_b_c, l_b_c, b_c, f_c, f_c_2, f_c_3, e_b_c_2, config_icon_path = dark_mode_color_values()
@@ -52,7 +51,6 @@ root.geometry("700x335")
 root.resizable(width=0, height=0)
 root.configure(bg=r_w_c)
 root.iconphoto(False, PhotoImage(file="assets\clock_icon2.PNG"))
-
 
 # Entry to receive the name, and display the time:
 entry_box = Entry(root,
@@ -97,8 +95,8 @@ def disable_not_in_use_buttons(in_task):
         button_get_name.config(state="disabled")
         button_graph.config(state="disabled")
         button_show_file.config(state="disabled")
-        button_test1.config(state="disabled")
-        button_timeline.config(state="disabled")
+        button_timeline_plotly.config(state="disabled")
+        button_all_tasks.config(state="disabled")
         button_adding.config(state="disabled")
         button_stopwatch_start.config(state="disabled")
     else:
@@ -107,8 +105,8 @@ def disable_not_in_use_buttons(in_task):
         button_get_name.config(state="normal")
         button_graph.config(state="normal")
         button_show_file.config(state="normal")
-        button_test1.config(state="normal")
-        button_timeline.config(state="normal")
+        button_timeline_plotly.config(state="normal")
+        button_all_tasks.config(state="normal")
         button_adding.config(state="normal")
         button_stopwatch_start.config(state="normal")
 
@@ -187,7 +185,6 @@ def stopwatch_start():
 
 
     entry_box.insert(0, f"~~started~~ -> {task_name}")
-
 
 
 def stopwatch_finish_calculate():
@@ -514,7 +511,6 @@ def config_window():
 
     check_buttons.for_dark_mode()
     check_buttons.for_graph_type()
-    # check_buttons.for_default_titlebar()
     # check_buttons.for_keeping_focus_on_window()
     conn.commit()
     conn.close()
@@ -634,21 +630,26 @@ button_stopwatch_start = Button(root,
     text=" Start ", padx=40, pady=20, bg=b_c, fg=f_c,
     activebackground=b_c,
     command=lambda: stopwatch_start())
+
 button_stopwatch_finish_calculate = Button(root,
     text=" Stop ", padx=40, pady=20, bg=b_c, fg=f_c,
     activebackground=b_c,
     command=lambda: stopwatch_finish_calculate())
+
 button_get_name = Button(root,
     text="Name deactvat", padx=40, pady=20, bg=b_c, fg=f_c,
     activebackground=b_c)
+
 button_clear = Button(root,
     text=" Clear ", padx=40, pady=20, bg=b_c, fg=f_c,
     activebackground=b_c,
     command=lambda: clear())
+
 button_show_file = Button(root,
     text="Show file", padx=28, pady=20, bg=b_c, fg=f_c,
     activebackground=b_c,
     command=lambda: show_file())
+
 button_graph = Button(root,
     text="Graph", padx=32, pady=20, bg=b_c, fg=f_c,
     activebackground=b_c,
@@ -663,12 +664,12 @@ button_config = Button(root,
     text="inf", image=tkimage, padx=32, width=90,
     pady=20, bg=b_c, fg=f_c, activebackground=b_c,
     command=lambda: config_window())
+
 button_adding = Button(root,
     text="add/choose \n projects", padx=28, pady=12,
     bg=b_c, activebackground=b_c, fg=f_c,
     command=lambda: add_projects())
 
-# Putting the buttons on the screen:
 button_stopwatch_start.place(x=2, y=130)
 button_stopwatch_finish_calculate.place(x=2, y=200)
 button_clear.place(x=125, y=270)
@@ -677,31 +678,32 @@ button_show_file.place(x=383, y=270)
 button_graph.place(x=500, y=270)
 
 def all_tasks_graph():
-    feedback(button_timeline)
+    feedback(button_all_tasks)
     gantt_graph()
 
 def timeline_plotly_graph():
-    feedback(button_test1)
+    feedback(button_timeline_plotly)
     import dataframe
+
+button_all_tasks = Button(root,
+    text="all_tasks", padx=14, pady=6,
+    bg=b_c, activebackground=b_c, fg=f_c,
+    command=lambda: all_tasks_graph())
+
+button_timeline_plotly = Button(root,
+    text="timeline", padx=14, pady=6,
+    bg=b_c, activebackground=b_c, fg=f_c,
+    command=lambda: timeline_plotly_graph())
+
+button_timeline_plotly.place(x=612, y=296)
+button_all_tasks.place(x=612, y=256)
+button_config.place(x=15, y=270)
 
 # def func2():
 #     # old_name = DATABASE_NAME
 #     # new_name = "local_database22.db"
 #     # os.rename(old_name, new_name)
 #     return
-
-button_timeline = Button(root,
-    text="all_tasks", padx=14, pady=6,
-    bg=b_c, activebackground=b_c, fg=f_c,
-    command=lambda: all_tasks_graph())
-button_timeline.place(x=612, y=256)
-button_test1 = Button(root,
-    text="timeline", padx=14, pady=6,
-    bg=b_c, activebackground=b_c, fg=f_c,
-    command=lambda: timeline_plotly_graph())
-button_test1.place(x=612, y=296)
-button_config.place(x=15, y=270)
-
 # button_test2 = Button(root, text="TEST2", padx=14, pady=6, bg=b_c, activebackground=b_c, fg=f_c, command=lambda: func2())
 # button_test2.place(x=500, y=270)
 root.mainloop()

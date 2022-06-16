@@ -7,6 +7,10 @@ import time
 import sqlite3
 from tkinter import messagebox
 
+from changing_database import database_file_path
+DATABASE_NAME = database_file_path()
+# print(f"dbname = {DATABASE_NAME}")
+
 def format_tuple(tuple_value: tuple, data_type):
     """
     Turns tuple into str/int/etc without commas or parenthesis.
@@ -44,7 +48,7 @@ def initialize():
     that have to be defined before other things.
     """
 
-    conn = sqlite3.connect("local_database.db")
+    conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
 
     try:
