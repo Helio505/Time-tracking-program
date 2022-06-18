@@ -9,7 +9,6 @@ from tkinter import messagebox
 
 from changing_database import database_file_path
 DATABASE_NAME = database_file_path()
-# print(f"dbname = {DATABASE_NAME}")
 
 def format_tuple(tuple_value: tuple, data_type):
     """

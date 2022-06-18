@@ -1,5 +1,5 @@
 """
-    This is for all the dark_mode/light_mode stuff.
+    This is for all the dark_mode/light_mode/theme stuff.
 """
 
 import sqlite3
@@ -7,7 +7,6 @@ from packages.easier import format_tuple
 
 from changing_database import database_file_path
 DATABASE_NAME = database_file_path()
-# print(f"dbname = {DATABASE_NAME}")
 
 def dark_true():
     "Connects to the db and updates value of dark mode to True"

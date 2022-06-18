@@ -23,7 +23,7 @@ from packages.easier import format_tuple, table_name_function
 from packages.easier import popup_windows, popup_windows_info
 
 from packages.dark_mode import dark_mode_color_values, dark_false, dark_true
-from packages.graph_file import graph, gantt_graph
+from packages.graph_file import graph, graph_with_all_tasks
 # from packages.config_file import above_win_false, above_win_true
 
 
@@ -56,6 +56,7 @@ root.iconphoto(False, PhotoImage(file="assets\clock_icon2.PNG"))
 entry_box = Entry(root,
     width=37, bg=e_b_c, fg=f_c_2, font=(18)) # font was 20, x was 200 width was 40
 entry_box.place(x=150, y=220)
+
 label_entry_title = Label(root,
     width=18, text="Event box", height=1,
     bg=l_b_c, fg=f_c_3, font=("Courier", 8)) # relief=RIDGE, borderwidth="1" before
@@ -66,6 +67,7 @@ label_time_passed = Label(root,
     width=18, height=2, bg=l_b_c,
     fg=f_c_3, font=("Courier", 30)) # relief=RIDGE, borderwidth="1" before
 label_time_passed.place(x=150, y=90)
+
 label_time_passed_title = Label(root,
     width=18, text="Counter", height=1, bg=l_b_c,
     fg=f_c_3, font=("Courier", 8)) # relief=RIDGE, borderwidth="1" before
@@ -75,6 +77,7 @@ label_time_passed_title.place(x=150, y=70)
 entry_box_goal = Entry(root,
     width=10, bg=e_b_c, fg="#180dea", font=(18))
 entry_box_goal.place(x=500, y=220)
+
 label_goal_title = Label(root,
     width=6, text="Goal", height=1,
     bg=l_b_c, fg=f_c_3, font=("Courier", 8)) # relief=RIDGE, borderwidth="1" before
@@ -679,7 +682,7 @@ button_graph.place(x=500, y=270)
 
 def all_tasks_graph():
     feedback(button_all_tasks)
-    gantt_graph()
+    graph_with_all_tasks()
 
 def timeline_plotly_graph():
     feedback(button_timeline_plotly)

@@ -6,9 +6,11 @@ from packages.easier import format_tuple, table_name_function
 import sqlite3
 import matplotlib.pyplot as plt
 
+import tkinter
+from tkinter import *
+
 from changing_database import database_file_path
 DATABASE_NAME = database_file_path()
-# print(f"dbname = {DATABASE_NAME}")
 
 def bar_true():
     conn = sqlite3.connect(DATABASE_NAME)
@@ -120,7 +122,7 @@ def graph(feedback_func_bt_par, root):
     root.after(250, showing_graph)
 
 
-def gantt_graph():
+def graph_with_all_tasks():
     """ This shows all the time spent on each project."""
     conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
@@ -146,12 +148,49 @@ def gantt_graph():
     
     conn.commit()
     conn.close()
+
+    with open("file.txt", mode="a", encoding="utf-8") as file:
+        file.truncate(0)
+        counter = 0
+        for i in legend:
+            file.write(f"-- {i} --\n")
+            file.write(f"{str(round(values[counter], 2))} min \n")
+            file.write("\n")
+            counter += 1
+        file.close()
     
-    fig, ax = plt.subplots()
-    bars = ax.bar(legend, values)
-    ax.bar_label(bars)
-    plt.title("Distribution of time")
-    plt.bar(legend, values, color="darkgreen", bottom=0, align="center")
-    plt.xlabel("Taskname"), plt.ylabel("Time spent (minutes)")
-    plt.rc("xtick", labelsize=7)
-    plt.show()
+
+    def show_file():
+        with open("file.txt") as file:
+            contents_of_file = file.read()
+
+        root_show_file = Tk()
+
+        root_show_file.geometry("293x600")
+        root_show_file.title("Task log")
+        root_show_file.resizable(width=0, height=0)
+        root_show_file.configure(bg="black")
+
+        # Somehow this scroll feature works, don't change anything here:
+        textbox = Text(root_show_file, height=35, width=30, bg="white", fg="black", font=("Arial", 10), padx=32, pady=22)
+        textbox.insert(END, contents_of_file)
+        textbox.grid(row=0, column=0)
+        
+        scrollbar = Scrollbar(root_show_file, orient="vertical", command=textbox.yview)
+        scrollbar.grid(row=0, column=1, sticky='ns')
+
+        textbox["yscrollcommand"] = scrollbar.set
+
+        root_show_file.mainloop()
+    show_file()
+
+    #--deactivated
+    # fig, ax = plt.subplots()
+    # bars = ax.bar(legend, values)
+    # ax.bar_label(bars)
+    # plt.title("Distribution of time")
+    # plt.bar(legend, values, color="darkgreen", bottom=0, align="center")
+    # plt.xlabel("Taskname"), plt.ylabel("Time spent (minutes)")
+    # plt.rc("xtick", labelsize=7)
+    # plt.show()
+    #--deactivated

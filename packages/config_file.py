@@ -1,5 +1,6 @@
 """
     This folder is for the config feature.
+    Has to do with the storage of semi-permanent configs in the database.
 """
 
 import sqlite3
@@ -7,7 +8,6 @@ from packages.easier import format_tuple
 
 from changing_database import database_file_path
 DATABASE_NAME = database_file_path()
-# print(f"dbname = {DATABASE_NAME}")
 
 def initialize_configs():
     conn = sqlite3.connect(DATABASE_NAME)
