@@ -27,6 +27,7 @@ How it looks (version 0.7):
 
 ## Recommendations/What you need to have:
 - I recommend cloning the whole repository and getting the folder, this build is developed enough that the program is almost usable.
+- Task names must only use symbols present in English. Words like à,ç,é,í may not work properly.
 - I only tested it on Windows 10.
 - Python 3.9.6
 - The main libraries are:

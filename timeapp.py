@@ -26,7 +26,6 @@ from packages.dark_mode import dark_mode_color_values, dark_false, dark_true
 from packages.graph_file import graph, graph_with_all_tasks
 # from packages.config_file import above_win_false, above_win_true
 
-
 # Some global variables:
 dark_mode = True # probably not needed. # if not chosen, dark mode is active.
 showing_time = False
@@ -413,7 +412,7 @@ def show_file():
     root_show_file = Tk()
 
     root_show_file.geometry("293x600")
-    root_show_file.title("Task log")
+    root_show_file.title("Task logs")
     root_show_file.resizable(width=0, height=0)
     root_show_file.configure(bg=r_w_c)
 
@@ -476,6 +475,7 @@ def config_window():
             check_toggle_mode.grid(row=1, column=0)
 
         def for_graph_type():
+            return
             var2 = IntVar()
             cursor.execute("SELECT value FROM config WHERE name = 'graph_type'")
             value = format_tuple(cursor.fetchone(), str).replace("'", "")
@@ -513,7 +513,7 @@ def config_window():
             check_toggle_mode.grid(row=4, column=0)
 
     check_buttons.for_dark_mode()
-    check_buttons.for_graph_type()
+    # check_buttons.for_graph_type()
     # check_buttons.for_keeping_focus_on_window()
     conn.commit()
     conn.close()
@@ -686,7 +686,12 @@ def all_tasks_graph():
 
 def timeline_plotly_graph():
     feedback(button_timeline_plotly)
-    import dataframe
+    print("Plotly is deactivated, cannot show timeline")
+    return
+    # import packages.dataframe
+    # """
+    # The act of importing dataframe, executes all the code in that file and creates the chart.
+    # """
 
 button_all_tasks = Button(root,
     text="all_tasks", padx=14, pady=6,
@@ -702,11 +707,4 @@ button_timeline_plotly.place(x=612, y=296)
 button_all_tasks.place(x=612, y=256)
 button_config.place(x=15, y=270)
 
-# def func2():
-#     # old_name = DATABASE_NAME
-#     # new_name = "local_database22.db"
-#     # os.rename(old_name, new_name)
-#     return
-# button_test2 = Button(root, text="TEST2", padx=14, pady=6, bg=b_c, activebackground=b_c, fg=f_c, command=lambda: func2())
-# button_test2.place(x=500, y=270)
 root.mainloop()

@@ -4,9 +4,14 @@
 
 from packages.easier import format_tuple, table_name_function
 import sqlite3
-import matplotlib.pyplot as plt
+from packages.dark_mode import dark_mode_color_values
 
-import tkinter
+r_w_c, e_b_c, l_b_c, b_c, f_c, f_c_2, f_c_3, e_b_c_2, config_icon_path = dark_mode_color_values()
+
+#--deactivated
+# import matplotlib.pyplot as plt 
+#--deactivated
+
 from tkinter import *
 
 from changing_database import database_file_path
@@ -74,6 +79,7 @@ def graph(feedback_func_bt_par, root):
 
     
     def showing_graph():
+        """ This graph shows time spent on stuff today. """
         global pie_components
         test_element = []
         for sec_elem in pie_components:
@@ -94,31 +100,70 @@ def graph(feedback_func_bt_par, root):
             legend_components[b] = legend_components[b] + f" [{str(pie_components_percentage[b])}%]"
             b += 1
 
-        if dark_graph == True:
-            plt.style.use('dark_background')
-        else:
-            pass
+        # print(f"legend -- {legend_components} pie -- {pie_components}")
+        # print(f"legend -- {legend_components} pie 2 -- {pie_components_percentage}")
+        with open("file_current_day.txt", mode="a", encoding="utf-8") as file:
+            file.truncate(0)
+            file.write(f"[~~Distrib of time(current day)~~]\n\n")
+            counter = 0
+            for i in legend_components:
+                file.write(f"-- {i} --\n")
+                file.write(f"{str(round(pie_components[counter], 2))} min \n")
+                file.write("\n")
+                counter += 1
+            file.close()
 
-        if graph_type == "PIE":
-            plt.title("Distribution of time (current day)")
-            plt.pie(pie_components)
-            plt.legend(legend_components, loc="upper left")
-            plt.show()
-        elif graph_type == "BAR":
-            fig, ax = plt.subplots()
-            bars = ax.bar(legend_components, pie_components)
-            ax.bar_label(bars)
-            plt.title("Distribution of time (current day)")
-            plt.bar(legend_components, pie_components, color="darkgreen", bottom=0, align="center")
-            plt.xlabel("Taskname (and % of time tracked)"), plt.ylabel("Time spent (minutes)")
-            plt.rc("xtick", labelsize=7)
-            plt.show()
-        elif graph_type == "DONUT":
-            pass
-        elif graph_type == "HORIBAR":
-            pass
-        else:
-            pass
+        def show_file():
+            with open("file_current_day.txt") as file:
+                contents_of_file = file.read()
+
+            root_show_file = Tk()
+
+            root_show_file.geometry("293x600")
+            root_show_file.title("Daily tasks")
+            root_show_file.resizable(width=0, height=0)
+            root_show_file.configure(bg=r_w_c)
+
+            textbox = Text(root_show_file, height=35, width=30, bg=r_w_c, fg=f_c, font=("Arial", 10), padx=32, pady=22)
+            textbox.insert(END, contents_of_file)
+            textbox.grid(row=0, column=0)
+            
+            scrollbar = Scrollbar(root_show_file, orient="vertical", command=textbox.yview)
+            scrollbar.grid(row=0, column=1, sticky='ns')
+
+            textbox["yscrollcommand"] = scrollbar.set
+
+            root_show_file.mainloop()
+        show_file()
+
+
+        #--deactivated
+        # if dark_graph == True:
+        #     plt.style.use('dark_background')
+        # else:
+        #     pass
+
+        # if graph_type == "PIE":
+        #     plt.title("Distribution of time (current day)")
+        #     plt.pie(pie_components)
+        #     plt.legend(legend_components, loc="upper left")
+        #     plt.show()
+        # elif graph_type == "BAR":
+        #     fig, ax = plt.subplots()
+        #     bars = ax.bar(legend_components, pie_components)
+        #     ax.bar_label(bars)
+        #     plt.title("Distribution of time (current day)")
+        #     plt.bar(legend_components, pie_components, color="darkgreen", bottom=0, align="center")
+        #     plt.xlabel("Taskname (and % of time tracked)"), plt.ylabel("Time spent (minutes)")
+        #     plt.rc("xtick", labelsize=7)
+        #     plt.show()
+        # elif graph_type == "DONUT":
+        #     pass
+        # elif graph_type == "HORIBAR":
+        #     pass
+        # else:
+        #     pass
+        #--deactivated
     root.after(250, showing_graph)
 
 
@@ -149,8 +194,9 @@ def graph_with_all_tasks():
     conn.commit()
     conn.close()
 
-    with open("file.txt", mode="a", encoding="utf-8") as file:
+    with open("file_all_tasks.txt", mode="a", encoding="utf-8") as file:
         file.truncate(0)
+        file.write(f"[~~All time spent on tasks~~]\n\n")
         counter = 0
         for i in legend:
             file.write(f"-- {i} --\n")
@@ -161,18 +207,17 @@ def graph_with_all_tasks():
     
 
     def show_file():
-        with open("file.txt") as file:
+        with open("file_all_tasks.txt") as file:
             contents_of_file = file.read()
 
         root_show_file = Tk()
 
         root_show_file.geometry("293x600")
-        root_show_file.title("Task log")
+        root_show_file.title("All tasks")
         root_show_file.resizable(width=0, height=0)
-        root_show_file.configure(bg="black")
+        root_show_file.configure(bg=r_w_c)
 
-        # Somehow this scroll feature works, don't change anything here:
-        textbox = Text(root_show_file, height=35, width=30, bg="white", fg="black", font=("Arial", 10), padx=32, pady=22)
+        textbox = Text(root_show_file, height=35, width=30, bg=r_w_c, fg=f_c, font=("Arial", 10), padx=32, pady=22)
         textbox.insert(END, contents_of_file)
         textbox.grid(row=0, column=0)
         

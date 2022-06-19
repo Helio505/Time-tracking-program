@@ -21,8 +21,8 @@ def initialize_configs():
     # this is initializing all config options:
     if list_of_configs == []: # if it is empty it will do this.
         cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['dark_mode', 'False'])
-        cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['extra_information', 'False'])
-        cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['graph_type', 'BAR'])
+        # cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['extra_information', 'False'])
+        # cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['graph_type', 'BAR'])
         # cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['above_other_windows', 'False'])
         # cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['dark_bg_graph', 'False'])
         # cursor.execute("INSERT INTO config (name, value) VALUES (?, ?)", ['high_contrast_mode', 'False'])
