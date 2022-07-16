@@ -40,3 +40,13 @@ How it looks (version 0.7):
 - To visualize databases I recommend this https://sqlitebrowser.org/
 
 obs. information for version 0.70
+
+## More info/Warnings/known problems:
+- Clicking buttons at random in the middle of an operation may result in corrupt databases.
+- The error divisionByZero, is probably related to a added task that was not used, a project created
+but with no time spent.
+- Clicking on show file before any project is created, will result in an error.
+- You can change the name of the .db files
+- The .db files can be on other folders (in /databases/ for example)
+- The only folders needed to really run the app are: /assets and /packages and the files in the main folder.
+
