@@ -33,13 +33,10 @@ How it looks (version 0.7):
 - The main libraries are:
   - tkinter -- 8.6
   - Pillow -- 9.0.0
-  - matplotlib -- 3.5.1
   - sqlite3 -- 3.35.5
   - time, datetime, sys
 - I was able to turn it into a .exe with cx_freeze without much trouble, so I recommend that.
 - To visualize databases I recommend this https://sqlitebrowser.org/
-
-obs. information for version 0.70
 
 ## More info/Warnings/known problems:
 - Clicking buttons at random in the middle of an operation may result in corrupt databases.
