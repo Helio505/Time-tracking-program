@@ -5,3 +5,11 @@ tasks saved file.txt
 /packages/__pycache__
 test.py
 __pycache__
+/tests
+/databases
+
+common.md
+file_all_tasks.txt
+file_current_day.txt
+assets/clock_icon.PNG
+assets/config.PNG

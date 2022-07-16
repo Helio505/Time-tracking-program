@@ -1,10 +1,14 @@
 """
-This file is to make the code of the __main__ file more readable.
-I will put here things that I use frequently.
+    This file is to make the code of the __main__ file more readable.
+    I will put here things that I use frequently.
 """
 
-import time, sqlite3
+import time
+import sqlite3
 from tkinter import messagebox
+
+from changing_database import database_file_path
+DATABASE_NAME = database_file_path()
 
 def format_tuple(tuple_value: tuple, data_type):
     """
@@ -43,7 +47,7 @@ def initialize():
     that have to be defined before other things.
     """
 
-    conn = sqlite3.connect("local_database.db")
+    conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
 
     try:
@@ -62,6 +66,11 @@ def initialize():
     except sqlite3.Error as error:
         print(error)
 
+    try:
+        cursor.execute("CREATE TABLE all_tasks_log (name text, time_spent real, starting_date text, finishing_date text)")
+    except sqlite3.Error as error:
+        print(error)
+
     table_name = table_name_function()
     try:
         cursor.execute("CREATE TABLE " + table_name + " (name text, time_spent real)")
@@ -76,3 +85,9 @@ def initialize():
 def popup_windows(title: str, message: str):
     popup = messagebox.showerror(title=title, message=message)
 
+def popup_windows_info(title: str, message: str):
+    popup2 = messagebox.showinfo(title=title, message=message)
+
+# TODO see if this is a good idea:
+# def printlog():
+#     """This writes to a log txt file"""

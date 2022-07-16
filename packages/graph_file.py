@@ -1,9 +1,39 @@
+"""
+    This file is for the graphs.
+"""
+
 from packages.easier import format_tuple, table_name_function
 import sqlite3
-import matplotlib.pyplot as plt
+from packages.dark_mode import dark_mode_color_values
 
+r_w_c, e_b_c, l_b_c, b_c, f_c, f_c_2, f_c_3, e_b_c_2, config_icon_path = dark_mode_color_values()
+
+from tkinter import *
+
+from changing_database import database_file_path
+DATABASE_NAME = database_file_path()
+
+def bar_true():
+    conn = sqlite3.connect(DATABASE_NAME)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE config set value = 'BAR' WHERE name = '"+"graph_type"+"'")
+    conn.commit()
+    conn.close()
+
+def bar_false():
+    conn = sqlite3.connect(DATABASE_NAME)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE config set value = 'PIE' WHERE name = '"+"graph_type"+"'")
+    conn.commit()
+    conn.close()
+
+conn = sqlite3.connect(DATABASE_NAME)
+cursor = conn.cursor()
+cursor.execute("SELECT value FROM config WHERE name = 'graph_type'")
+value = format_tuple(cursor.fetchone(), str).replace("'", "")
+
+graph_type = value
 dark_graph = False
-graph_type = "BAR"
 
 def graph(feedback_func_bt_par, root):
     """feedback_func_bt_par means -- feedback function with button as parameter.
@@ -12,7 +42,7 @@ def graph(feedback_func_bt_par, root):
     feedback_func_bt_par
     def get_elements_for_graph():
         """Gets the elements to build the graph."""
-        conn = sqlite3.connect("local_database.db")
+        conn = sqlite3.connect(DATABASE_NAME)
         cursor = conn.cursor()
         global pie_components, legend_components
         pie_components = []
@@ -45,18 +75,16 @@ def graph(feedback_func_bt_par, root):
 
     
     def showing_graph():
-    # ------------------- testing changing seconds to minutes in the graph
+        """ This graph shows time spent on stuff today. """
         global pie_components
         test_element = []
-        for i in pie_components:
-            i = i / 60
-            test_element.append(i)
-        
+        for sec_elem in pie_components:
+            min_elem = sec_elem / 60
+            test_element.append(min_elem)
         pie_components = test_element
-    # -------------------
-
+        
         if len(legend_components) != len(pie_components): # to remove problem of index out of range
-            pie_components.append(0)
+            pie_components.append(0) # error division by zero
 
         pie_components_percentage = []
         for i in pie_components:
@@ -68,41 +96,45 @@ def graph(feedback_func_bt_par, root):
             legend_components[b] = legend_components[b] + f" [{str(pie_components_percentage[b])}%]"
             b += 1
 
-        print(f"legend = {legend_components}")
+        with open("file_current_day.txt", mode="a", encoding="utf-8") as file:
+            file.truncate(0)
+            file.write(f"[~~Distrib of time(current day)~~]\n\n")
+            counter = 0
+            for i in legend_components:
+                file.write(f"-- {i} --\n")
+                file.write(f"{str(round(pie_components[counter], 2))} min \n")
+                file.write("\n")
+                counter += 1
+            file.close()
 
-        if dark_graph == True:
-            plt.style.use('dark_background')
-        else:
-            pass
+        def show_file():
+            with open("file_current_day.txt") as file:
+                contents_of_file = file.read()
 
-        if graph_type == "PIE":
-            plt.title("Distribution of time")
-            plt.pie(pie_components)
-            plt.legend(legend_components, loc="upper left")
-            plt.show()
-        elif graph_type == "BAR":
-            fig, ax = plt.subplots()
-            bars = ax.bar(legend_components, pie_components)
-            ax.bar_label(bars)
-            plt.title("Distribution of time")
-            plt.bar(legend_components, pie_components, color="darkgreen", bottom=0, align="center")
-            plt.xlabel("Taskname"), plt.ylabel("Time spent (minutes)")
-            plt.rc("xtick", labelsize=7)
-            plt.show()
-        elif graph_type == "DONUT":
-            pass
-        elif graph_type == "HORIBAR":
-            pass
-        else:
-            pass
+            root_show_file = Tk()
 
-        # plt.savefig("testfig2", dpi=600)
+            root_show_file.geometry("293x600")
+            root_show_file.title("Daily tasks")
+            root_show_file.resizable(width=0, height=0)
+            root_show_file.configure(bg=r_w_c)
 
+            textbox = Text(root_show_file, height=35, width=30, bg=r_w_c, fg=f_c, font=("Arial", 10), padx=32, pady=22)
+            textbox.insert(END, contents_of_file)
+            textbox.grid(row=0, column=0)
+            
+            scrollbar = Scrollbar(root_show_file, orient="vertical", command=textbox.yview)
+            scrollbar.grid(row=0, column=1, sticky='ns')
+
+            textbox["yscrollcommand"] = scrollbar.set
+
+            root_show_file.mainloop()
+        show_file()
     root.after(250, showing_graph)
 
-def gantt_graph():
-    """Change this for another type of graph in the future."""
-    conn = sqlite3.connect("local_database.db")
+
+def graph_with_all_tasks():
+    """ This shows all the time spent on each project."""
+    conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
 
     legend = []
@@ -110,7 +142,6 @@ def gantt_graph():
     for i in cursor.execute("SELECT name FROM all_tasks").fetchall():
             i = format_tuple(i, str).replace("'", "")
             legend.append(i)
-            print("a", i)
 
     for i in cursor.execute("SELECT time_spent FROM all_tasks").fetchall():
             if str(i) == "(None,)":
@@ -124,20 +155,41 @@ def gantt_graph():
         i = i / 60
         values_in_min.append(i)
     values = values_in_min
-
-    print(f"legend --- {legend}, {len(legend)}")
-    print(f"valueees --- {values}, len {len(values)}") 
     
     conn.commit()
     conn.close()
-    
-    # change from bar graph to gantt
-    fig, ax = plt.subplots()
-    bars = ax.bar(legend, values)
-    ax.bar_label(bars)
-    plt.title("Distribution of time")
-    plt.bar(legend, values, color="darkgreen", bottom=0, align="center")
-    plt.xlabel("Taskname"), plt.ylabel("Time spent (minutes)")
-    plt.rc("xtick", labelsize=7)
-    plt.show()
 
+    with open("file_all_tasks.txt", mode="a", encoding="utf-8") as file:
+        file.truncate(0)
+        file.write(f"[~~All time spent on tasks~~]\n\n")
+        counter = 0
+        for i in legend:
+            file.write(f"-- {i} --\n")
+            file.write(f"{str(round(values[counter], 2))} min \n")
+            file.write("\n")
+            counter += 1
+        file.close()
+    
+
+    def show_file():
+        with open("file_all_tasks.txt") as file:
+            contents_of_file = file.read()
+
+        root_show_file = Tk()
+
+        root_show_file.geometry("293x600")
+        root_show_file.title("All tasks")
+        root_show_file.resizable(width=0, height=0)
+        root_show_file.configure(bg=r_w_c)
+
+        textbox = Text(root_show_file, height=35, width=30, bg=r_w_c, fg=f_c, font=("Arial", 10), padx=32, pady=22)
+        textbox.insert(END, contents_of_file)
+        textbox.grid(row=0, column=0)
+        
+        scrollbar = Scrollbar(root_show_file, orient="vertical", command=textbox.yview)
+        scrollbar.grid(row=0, column=1, sticky='ns')
+
+        textbox["yscrollcommand"] = scrollbar.set
+
+        root_show_file.mainloop()
+    show_file()
