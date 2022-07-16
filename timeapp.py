@@ -13,6 +13,7 @@ from PIL import Image, ImageTk
 
 from changing_database import choose_file
 DATABASE_NAME = choose_file()
+print(f"Database_file_being_used = {DATABASE_NAME}")
 
 from packages.easier import initialize
 from packages.config_file import initialize_configs
@@ -451,7 +452,9 @@ def config_window():
     frame_config = Frame(root, bg="darkgrey", pady=100, padx=50)
     frame_config.place(x=700, y=14)
 
-    info_label = Label(frame_config, font=("Courier", 8), text="'Restart needed for all changes.'", height=2, width=40, bg="darkgrey")
+    info_label = Label(frame_config,
+        font=("Courier", 8), text="'Restart needed for all changes.'",
+        height=2, width=40, bg="darkgrey")
     info_label.grid(row=0, column=0)
 
     class check_buttons:
@@ -471,7 +474,10 @@ def config_window():
                         dark_true()
                     else:
                         dark_false()
-            check_toggle_mode = Checkbutton(frame_config, text="Dark mode", font=("Courier", 15), width=10, relief="ridge", bg="grey", variable=var1, onvalue=1, offvalue=0, command=mode_function)
+            check_toggle_mode = Checkbutton(frame_config,
+                text="Dark mode", font=("Courier", 15), width=10,
+                relief="ridge", bg="grey", variable=var1, onvalue=1,
+                offvalue=0, command=mode_function)
             check_toggle_mode.grid(row=1, column=0)
 
         def for_graph_type():
@@ -511,7 +517,25 @@ def config_window():
 
             check_toggle_mode = Checkbutton(frame_config, text="Above others", font=("Courier", 10), wraplength=200, width=16, relief="ridge", bg="grey", variable=var4, onvalue=1, offvalue=0, command=mode_function)
             check_toggle_mode.grid(row=4, column=0)
-
+    def information_button():
+        def readme():
+            root_readme = Tk()
+            info_label_2 = Label(root_readme, font=("Courier", 8),
+            height=2, width=40, bg="darkgrey", text=
+            """
+            Put a little tutorial here
+            lorem lorem lorem lorem
+            lorem lorem lorem lorem
+            lorem lorem lorem lorem
+            lorem lorem lorem lorem
+            """) #TODO put a tutorial here a reformat to have the correct aspect ratio
+            info_label_2.grid(row=0, column=0)
+            root_readme.mainloop()
+        button_information = Button(frame_config,
+            text="Info", font=("Courier", 15), width=10,
+            bg="grey", command=readme)
+        button_information.grid(row=2, column=0)
+    information_button()
     check_buttons.for_dark_mode()
     # check_buttons.for_graph_type()
     # check_buttons.for_keeping_focus_on_window()

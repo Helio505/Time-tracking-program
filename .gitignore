@@ -5,10 +5,12 @@ tasks saved file.txt
 /packages/__pycache__
 test.py
 __pycache__
-
+/tests
+/databases
 
 # remove the block below when I'm working on this project
 *
 */
 /packages/
 /packages
+common.md
