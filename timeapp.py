@@ -25,7 +25,6 @@ from packages.easier import popup_windows, popup_windows_info
 
 from packages.dark_mode import dark_mode_color_values, dark_false, dark_true
 from packages.graph_file import graph, graph_with_all_tasks
-# from packages.config_file import above_win_false, above_win_true
 
 # Some global variables:
 dark_mode = True # probably not needed. # if not chosen, dark mode is active.
@@ -186,7 +185,6 @@ def stopwatch_start():
     in_task = True
     disable_not_in_use_buttons(in_task)
 
-
     entry_box.insert(0, f"~~started~~ -> {task_name}")
 
 
@@ -264,7 +262,6 @@ def stopwatch_finish_calculate():
     
     insert_database()
     insert_into_all_tasks_database()
-    # test()
     root.after(1000, clear)
 
 
@@ -457,86 +454,26 @@ def config_window():
         height=2, width=40, bg="darkgrey")
     info_label.grid(row=0, column=0)
 
-    class check_buttons:
-        # This class is just to store things better.
-
-        def for_dark_mode():
-            var1 = IntVar()
-            cursor.execute("SELECT value FROM config WHERE name = 'dark_mode'")
-            value = format_tuple(cursor.fetchone(), str).replace("'", "")
-            if value == "True":
-                var1.set(1)
-            else:
-                var1.set(0)
-            
-            def mode_function():
-                    if var1.get() == 1:
-                        dark_true()
-                    else:
-                        dark_false()
-            check_toggle_mode = Checkbutton(frame_config,
-                text="Dark mode", font=("Courier", 15), width=10,
-                relief="ridge", bg="grey", variable=var1, onvalue=1,
-                offvalue=0, command=mode_function)
-            check_toggle_mode.grid(row=1, column=0)
-
-        def for_graph_type():
-            return
-            var2 = IntVar()
-            cursor.execute("SELECT value FROM config WHERE name = 'graph_type'")
-            value = format_tuple(cursor.fetchone(), str).replace("'", "")
-            if value == "BAR":
-                var2.set(1)
-            else:
-                var2.set(0)
-            from packages.graph_file import bar_false, bar_true
-            def mode_function():
-                    if var2.get() == 1:
-                        bar_true()
-                    else:
-                        bar_false()
-            check_toggle_mode = Checkbutton(frame_config, text="Bar graph", font=("Courier", 15), width=10, relief="ridge", bg="grey", variable=var2, onvalue=1, offvalue=0, command=mode_function)
-            check_toggle_mode.grid(row=2, column=0)
-
-        def for_keeping_focus_on_window(): # FIXME above others is buggy
-            return
-            var4 = IntVar()
-            cursor.execute("SELECT value FROM config WHERE name = 'above_other_windows'")
-            value1 = format_tuple(cursor.fetchone(), str).replace("'", "")
-            if value1 == "True":
-                var4.set(1)
-            else:
-                var4.set(0)
-            
-            
-            def mode_function():
-                if var4.get() == 1:
-                    above_win_true()
+    def for_dark_mode():
+        var1 = IntVar()
+        cursor.execute("SELECT value FROM config WHERE name = 'dark_mode'")
+        value = format_tuple(cursor.fetchone(), str).replace("'", "")
+        if value == "True":
+            var1.set(1)
+        else:
+            var1.set(0)
+        
+        def mode_function():
+                if var1.get() == 1:
+                    dark_true()
                 else:
-                    above_win_false()
-
-            check_toggle_mode = Checkbutton(frame_config, text="Above others", font=("Courier", 10), wraplength=200, width=16, relief="ridge", bg="grey", variable=var4, onvalue=1, offvalue=0, command=mode_function)
-            check_toggle_mode.grid(row=4, column=0)
-    def information_button():
-        def readme():
-            root_readme = Tk()
-            info_label_2 = Label(root_readme, font=("Courier", 8),
-            height=2, width=40, bg="darkgrey", text=
-            """
-            Put a little tutorial here
-            lorem lorem lorem lorem
-            lorem lorem lorem lorem
-            lorem lorem lorem lorem
-            lorem lorem lorem lorem
-            """) #TODO put a tutorial here a reformat to have the correct aspect ratio
-            info_label_2.grid(row=0, column=0)
-            root_readme.mainloop()
-        button_information = Button(frame_config,
-            text="Info", font=("Courier", 15), width=10,
-            bg="grey", command=readme)
-        button_information.grid(row=2, column=0)
-    information_button()
-    check_buttons.for_dark_mode()
+                    dark_false()
+        check_toggle_mode = Checkbutton(frame_config,
+            text="Dark mode", font=("Courier", 15), width=10,
+            relief="ridge", bg="grey", variable=var1, onvalue=1,
+            offvalue=0, command=mode_function)
+        check_toggle_mode.grid(row=1, column=0)
+    for_dark_mode()
     # check_buttons.for_graph_type()
     # check_buttons.for_keeping_focus_on_window()
     conn.commit()

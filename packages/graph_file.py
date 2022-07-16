@@ -8,10 +8,6 @@ from packages.dark_mode import dark_mode_color_values
 
 r_w_c, e_b_c, l_b_c, b_c, f_c, f_c_2, f_c_3, e_b_c_2, config_icon_path = dark_mode_color_values()
 
-#--deactivated
-# import matplotlib.pyplot as plt 
-#--deactivated
-
 from tkinter import *
 
 from changing_database import database_file_path
@@ -100,8 +96,6 @@ def graph(feedback_func_bt_par, root):
             legend_components[b] = legend_components[b] + f" [{str(pie_components_percentage[b])}%]"
             b += 1
 
-        # print(f"legend -- {legend_components} pie -- {pie_components}")
-        # print(f"legend -- {legend_components} pie 2 -- {pie_components_percentage}")
         with open("file_current_day.txt", mode="a", encoding="utf-8") as file:
             file.truncate(0)
             file.write(f"[~~Distrib of time(current day)~~]\n\n")
@@ -135,35 +129,6 @@ def graph(feedback_func_bt_par, root):
 
             root_show_file.mainloop()
         show_file()
-
-
-        #--deactivated
-        # if dark_graph == True:
-        #     plt.style.use('dark_background')
-        # else:
-        #     pass
-
-        # if graph_type == "PIE":
-        #     plt.title("Distribution of time (current day)")
-        #     plt.pie(pie_components)
-        #     plt.legend(legend_components, loc="upper left")
-        #     plt.show()
-        # elif graph_type == "BAR":
-        #     fig, ax = plt.subplots()
-        #     bars = ax.bar(legend_components, pie_components)
-        #     ax.bar_label(bars)
-        #     plt.title("Distribution of time (current day)")
-        #     plt.bar(legend_components, pie_components, color="darkgreen", bottom=0, align="center")
-        #     plt.xlabel("Taskname (and % of time tracked)"), plt.ylabel("Time spent (minutes)")
-        #     plt.rc("xtick", labelsize=7)
-        #     plt.show()
-        # elif graph_type == "DONUT":
-        #     pass
-        # elif graph_type == "HORIBAR":
-        #     pass
-        # else:
-        #     pass
-        #--deactivated
     root.after(250, showing_graph)
 
 
@@ -228,14 +193,3 @@ def graph_with_all_tasks():
 
         root_show_file.mainloop()
     show_file()
-
-    #--deactivated
-    # fig, ax = plt.subplots()
-    # bars = ax.bar(legend, values)
-    # ax.bar_label(bars)
-    # plt.title("Distribution of time")
-    # plt.bar(legend, values, color="darkgreen", bottom=0, align="center")
-    # plt.xlabel("Taskname"), plt.ylabel("Time spent (minutes)")
-    # plt.rc("xtick", labelsize=7)
-    # plt.show()
-    #--deactivated
