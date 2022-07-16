@@ -649,10 +649,6 @@ def timeline_plotly_graph():
     feedback(button_timeline_plotly)
     print("Plotly is deactivated, cannot show timeline")
     return
-    # import packages.dataframe
-    # """
-    # The act of importing dataframe, executes all the code in that file and creates the chart.
-    # """
 
 button_all_tasks = Button(root,
     text="all_tasks", padx=14, pady=6,

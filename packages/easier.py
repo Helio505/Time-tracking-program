@@ -87,4 +87,7 @@ def popup_windows(title: str, message: str):
 
 def popup_windows_info(title: str, message: str):
     popup2 = messagebox.showinfo(title=title, message=message)
-    
+
+# TODO see if this is a good idea:
+# def printlog():
+#     """This writes to a log txt file"""
